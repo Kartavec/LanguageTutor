@@ -7,33 +7,14 @@ namespace LanguageTutor
     {
         static void Main(string[] args)
         {
-            HashSet<int> set = new HashSet<int>();
-            set.Add(1);
-            set.Add(2);
-            set.Add(1);
+            var tutor = new Tutor();
+            tutor.AddWord("hello", "привет");
+            tutor.AddWord("dog", "собака");
+            tutor.AddWord("cat", "кошка");
+            tutor.AddWord("byke", "велосипед");
 
-            if (set.Contains(1))
+            if(tutor.CheckWord("dog", "Cобака"))
             {
-                Console.WriteLine("В hashset-е хранится элемент 1");
-            }
-
-
-            Dictionary<string, string> dic = new Dictionary<string, string>();
-            dic.Add("dog", "собака");
-            dic.Add("cat", "кошка");
-
-
-            Console.WriteLine($"dog переводится как {dic["dog"]}");
-            Console.WriteLine($"В словаре у нас {dic.Count} значений");
-
-            foreach (var key in dic.Keys)
-            {
-                Console.WriteLine($"{key} переводится как {dic[key]}");
-            }
-
-            if (dic.ContainsKey("dog"))
-            {
-
 
             }
         }
