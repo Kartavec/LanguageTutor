@@ -8,9 +8,6 @@ namespace LanguageTutor
         static void Main(string[] args)
         {
             var tutor = new Tutor();
-            tutor.AddWord("hello", "привет");
-            tutor.AddWord("dog", "собака");
-            tutor.AddWord("cat", "кошка");
 
             while (true)
             {
