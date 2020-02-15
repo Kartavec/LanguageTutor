@@ -54,12 +54,16 @@ namespace LanguageTutor
 
                 case "/check":
                     text = CheckWord(msgArgs);
+                    var newWord = GetRandomEngWord(userId);
+                    text = $"{text}\r\nСледующее слово: {newWord}";
                     break;
 
                 default:
                     if (LastWord.ContainsKey(userId))
                     {
                         text = CheckWord(LastWord[userId], msgArgs[0]);
+                        newWord = GetRandomEngWord(userId);
+                        text = $"{text}\r\nСледующее слово: {newWord}";
                     }
                     else
                         text = COMMAND_LIST;
