@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Exceptions
@@ -7,17 +8,38 @@ namespace Exceptions
     {
         static void Main(string[] args)
         {
-            try
-            {
-                var r = GetRowCount("C:/Path/file.txt");
-                Console.WriteLine(r);
-            }
-            catch (AppException ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
+            var nums = GetArrayFromFile("path.txt");
+
         }
 
+        static int[] GetArrayFromFile(string path)
+        {
+            try
+            {
+                string content = File.ReadAllText(path);
+                var numString = content.Split(' ');
+                List<int> nums = new List<int>();
+                for (int i = 0; i < numString.Length; i++)
+                {
+                    int num;
+                    if (Int32.TryParse(numString[i], out num))
+                        nums.Add(num);
+
+                    //try
+                    //{
+                    //    int num = Int32.Parse(numString[i]);
+                    //    nums.Add(num);
+                    //}
+                    //catch (Exception){}
+                }
+                return nums.ToArray();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Не удалось считать содержимое файла {path}");
+                return new int[0];
+            }
+        }
         static int GetRowCount(string path)
         {
             try
