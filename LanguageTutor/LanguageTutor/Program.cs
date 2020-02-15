@@ -8,6 +8,13 @@ namespace LanguageTutor
     {
 
         static TelegramBotClient Bot;
+
+        const string COMMAND_LIST =
+@"Список команд:
+/add <eng> <rus> - добавление английского слова и его перевод в словарь
+/get - получаем случайное английское слово из словаря
+/check <eng> <rus> - проверяем правильность перевода английского слова
+";
         static void Main(string[] args)
         {
             Bot = new TelegramBotClient("1077974262:AAFLGbCcG10-1TWHyNALbjwF3JhyJBjOrKY");
@@ -40,11 +47,21 @@ namespace LanguageTutor
 
         }
 
-        private static void Bot_OnMessage(object sender, Telegram.Bot.Args.MessageEventArgs e)
+        private static async void Bot_OnMessage(object sender, Telegram.Bot.Args.MessageEventArgs e)
         {
+            if (e == null || e.Message == null || e.Message.Type != Telegram.Bot.Types.Enums.MessageType.Text)
+                return;
+
             Console.WriteLine(e.Message.Text);
             Console.WriteLine(e.Message.From.Username);
 
+            var msgArgs = e.Message.Text.Split(' ');
+            switch (msgArgs[0])
+            {
+                case "/start":
+                    await Bot.SendTextMessageAsync(e.Message.From.Id, COMMAND_LIST);
+                    break;
+            }
         }
     }
 }
