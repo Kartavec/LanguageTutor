@@ -7,8 +7,15 @@ namespace Exceptions
     {
         static void Main(string[] args)
         {
-            var r = GetRowCount("C:/Path/file.txt");
-            Console.WriteLine(r);
+            try
+            {
+                var r = GetRowCount("C:/Path/file.txt");
+                Console.WriteLine(r);
+            }
+            catch (AppException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
 
         static int GetRowCount(string path)
@@ -29,10 +36,12 @@ namespace Exceptions
                 Console.WriteLine("Функция была вызвана с пустым аргументом. Так делать нехорошо!");
                 return 0;
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
-                Console.WriteLine("Не получилось считать файл");
-                return 0;
+                Console.WriteLine("Алярм, ошибка!");
+                var appEx = new AppException();
+                appEx.MethodName = "GetRowCount";
+                throw appEx;
             }
         }
     }
