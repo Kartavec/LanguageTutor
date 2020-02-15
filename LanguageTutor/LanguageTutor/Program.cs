@@ -8,7 +8,8 @@ namespace LanguageTutor
     {
 
         static TelegramBotClient Bot;
-
+        static Tutor Tutor = new Tutor();
+        static Dictionary<int, string> LastWord = new Dictionary<int, string>();
         const string COMMAND_LIST =
 @"Список команд:
 /add <eng> <rus> - добавление английского слова и его перевод в словарь
@@ -26,25 +27,6 @@ namespace LanguageTutor
             Bot.StartReceiving();
             Console.ReadLine();
             Bot.StopReceiving();
-
-
-
-            //var tutor = new Tutor();
-            //tutor.AddWord("rabbit", "кролик");
-            //while (true)
-            //{
-            //    var word = tutor.GetRandomEngWord();
-            //    Console.WriteLine($"Как переводится слово: {word}?");
-            //    var userAnswer = Console.ReadLine();
-            //    if (tutor.CheckWord(word, userAnswer))
-            //        Console.WriteLine("Правильно!");
-            //    else
-            //    {
-            //        var correctAnswer = tutor.Translate(word);
-            //        Console.WriteLine($"Неверно. Правильный ответ: {correctAnswer}");
-            //    }
-            //}
-
         }
 
         private static async void Bot_OnMessage(object sender, Telegram.Bot.Args.MessageEventArgs e)
@@ -54,14 +36,81 @@ namespace LanguageTutor
 
             Console.WriteLine(e.Message.Text);
             Console.WriteLine(e.Message.From.Username);
-
+            var userId = e.Message.From.Id;
             var msgArgs = e.Message.Text.Split(' ');
+            String text;
             switch (msgArgs[0])
             {
                 case "/start":
-                    await Bot.SendTextMessageAsync(e.Message.From.Id, COMMAND_LIST);
+                    text = COMMAND_LIST;
+                    break;
+                case "/add":
+                    text = AddWords(msgArgs);
+                    break;
+
+                case "/get":
+                    text = GetRandomEngWord(userId);
+                    break;
+
+                case "/check":
+                    text = CheckWord(msgArgs);
+                    break;
+
+                default:
+                    if (LastWord.ContainsKey(userId))
+                    {
+                        text = CheckWord(LastWord[userId], msgArgs[0]);
+                    }
+                    else
+                        text = COMMAND_LIST;
                     break;
             }
+            await Bot.SendTextMessageAsync(e.Message.From.Id, text);
+
         }
+
+        private static string GetRandomEngWord(int userId)
+        {
+            var text = Tutor.GetRandomEngWord();
+            if (LastWord.ContainsKey(userId))
+                LastWord[userId] = text;
+            else
+                LastWord.Add(userId, text);
+
+            return text;
+        }
+
+        private static string CheckWord(string[] msgArr)
+        {
+            if (msgArr.Length != 3)
+                return "Неправильное количество аргументов. Их должно быть 2";
+            else
+            {
+                return CheckWord(msgArr[1], msgArr[2]);
+            }
+        }
+
+        private static string CheckWord(string eng, string rus)
+        {
+            if (Tutor.CheckWord(eng, rus))
+                return "Правильно!";
+            else
+            {
+                var correctAnswer = Tutor.Translate(eng);
+                return $"Неверно. Правильный ответ: \"{correctAnswer}\".";
+            }
+        }
+
+        static string AddWords(String[] msgArr)
+        {
+            if (msgArr.Length != 3)
+                return "Неправильное количество аргументов. Их должно быть 2";
+            else
+            {
+                Tutor.AddWord(msgArr[1], msgArr[2]);
+                return "Новое слово добавлено в словарь";
+            }
+        }
+
     }
 }
